@@ -35,8 +35,4 @@ public class MenuItem {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return name + " - " + price + " : " + description;
-    }
 }

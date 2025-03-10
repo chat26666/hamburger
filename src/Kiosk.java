@@ -36,22 +36,4 @@ public class Kiosk {
             }
         }
     }
-    public void addMenuItem(MenuItem item) {
-        items.add(item);
-    }
-    public boolean removeMenuItem(String name) {
-        return items.removeIf(item -> item.getName().equals(name));
-    }
-
-    public List<MenuItem> getMenuItems() {
-        return items;
-    }
-    public MenuItem findMenuItem(String name) {
-        for (MenuItem item : items) {
-            if (item.getName().equals(name)) {
-                return item;
-            }
-        }
-        return null;
-    }
 }

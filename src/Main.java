@@ -9,6 +9,5 @@ public class Main {
         Kiosk kiosk = new Kiosk(name, price, description);
         kiosk.start();
 
-
     }
 }
