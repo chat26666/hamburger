@@ -9,6 +9,7 @@ public class MenuItem {
         this.price = price;
         this.description = description;
     }
+
     public String getName() {
         return name;
     }
@@ -32,3 +33,4 @@ public class MenuItem {
     public void setDescription(String description) {
         this.description = description;
     }
+}
