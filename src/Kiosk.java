@@ -1,9 +1,6 @@
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 public class Kiosk {
     private List<Menu> items;
@@ -13,27 +10,18 @@ public class Kiosk {
     public Kiosk(Menu[] items) {
         this.items = new ArrayList<>();
         this.carts = new HashMap<>();
-        for (Menu item : items) {
-            this.items.add(item);
-        }
+        Arrays.stream(items).forEach(a -> this.items.add(a)); // 람다식 표현으로 for 문을 대체하였습니다.
         sc = new Scanner(System.in);
     }
     public void printMainMenu() {
         System.out.println("[ MAIN MENU ]\n");
         if(carts.size() > 0) {
-            for (int num = 0; num < items.size(); num++) {
-                System.out.println(num + 1 + ". " + items.get(num).getCategory());
-            }
+            IntStream.range(0,items.size()).forEach(num -> System.out.println(num + 1 + ". " + items.get(num).getCategory())); // 람다식 표현으로 for문 대체 index 값(num)의 증가를 위해서 IntStream 사용
             System.out.println("\n[ ORDER MENU ]\n");
             System.out.println(items.size()+1 + ". ORDERS");
             System.out.println(items.size()+2 + ". CANCEL");
-            System.out.println("0. 종료하기     | 종료");
-        } else {
-            for (int num = 0; num < items.size(); num++) {
-                System.out.println(num + 1 + ". " + items.get(num).getCategory());
-            }
-            System.out.println("0. 종료하기     | 종료");
-        }
+        } else IntStream.range(0,items.size()).forEach(num -> System.out.println(num + 1 + ". " + items.get(num).getCategory()));
+        System.out.println("0. 종료하기     | 종료");
     }
     public int choiceMenu() throws InputMismatchException {
             int choice = sc.nextInt()-1;

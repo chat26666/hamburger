@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class Menu {
     private String category;
@@ -7,9 +8,7 @@ public class Menu {
     public Menu(String category, String[] name, double[] price,String[] description) {
         this.category=category;
         items = new ArrayList<>();
-        for (int i = 0; i < name.length; i++) {
-            items.add(new MenuItem(name[i], price[i], description[i]));
-        }
+        IntStream.range(0, name.length).forEach(i -> items.add(new MenuItem(name[i], price[i], description[i]))); // 람다식 표현으로 변경, 배열의 인덱스로 순서대로 생성자값을 넣어줘야해서 IntStream 사용하였습니다.
     }
     public List getItems() {
         return this.items;
@@ -19,9 +18,8 @@ public class Menu {
     }
     public void printMenu() {
         System.out.println("[ "+category+" MENU ]\n");
-        for(int num = 0; num < items.size(); num++) {
-            System.out.println(num+1 +". "+items.get(num).getName()+"    "+"| W "+items.get(num).getPrice()/1000+" | "+items.get(num).getDescription());
-        }
+        IntStream.range(0, items.size()).forEach(num -> System.out.println(num+1 +". "+items.get(num).getName()+
+                        "    "+"| W "+items.get(num).getPrice()/1000+" | "+items.get(num).getDescription()));
         System.out.println("0. 뒤로가기      | 뒤로");
     }
 }
