@@ -48,14 +48,15 @@ public class Kiosk {
                     "2. 군인     :  5%\n" +
                     "3. 학생     :  3%\n" +
                     "4. 일반     :  0%");
-            choice = sc.nextInt();
-            if (choice == 1) System.out.println("주문이 완료되었습니다. 금액은 W " + ((double) sum.get() - (double) sum.get() / 10) + " 입니다.");
-            else if (choice == 2) System.out.println("주문이 완료되었습니다. 금액은 W " + ((double) sum.get() - (double) sum.get() / 20) + " 입니다.");
-            else if (choice == 3) System.out.println("주문이 완료되었습니다. 금액은 W " + ((double) sum.get() - (double) sum.get() / 100 * 3) + " 입니다.");
-            else if (choice == 4) System.out.println("주문이 완료되었습니다. 금액은 W " + (double) sum.get() + " 입니다.");
+            int choiceFinal = sc.nextInt();
+            if (choiceFinal >= 1 && choiceFinal <= 4) {
+                Arrays.stream(Buyer.values()).filter(buyer -> buyer.getNum() == choiceFinal)
+                        .forEach(buyer -> System.out.println("주문이 완료되었습니다. 금액은 W " + buyer.getSum(sum.get(), sum.get()) + " 입니다."));
+                carts.clear();  //열거형 클래스 사용으로 4~5줄의 if 분기문 대신 한줄의 코드로 대체되었습니다.
+            }
             else throw new InputMismatchException();
-            carts.clear();
         }
+        else if (choice == 2) System.out.println("메뉴판으로 돌아갑니다.");
         else throw new InputMismatchException();
     }
     public void start() {
