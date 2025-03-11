@@ -1,14 +1,18 @@
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Kiosk {
     private List<Menu> items;
+    private HashMap<MenuItem,Integer> carts;
     private Scanner sc;
 
     public Kiosk(Menu[] items) {
         this.items = new ArrayList<>();
+        this.carts = new HashMap<>();
         for (Menu item : items) {
             this.items.add(item);
         }
@@ -16,58 +20,101 @@ public class Kiosk {
     }
     public void printMainMenu() {
         System.out.println("[ MAIN MENU ]\n");
-        for(int num = 0; num < items.size(); num++) {
-            System.out.println(num+1 +". "+items.get(num).getCategory());
-        }
-        System.out.println("0. 종료하기     | 종료");
-    }
-    public int choiceMenu() {
-        try {
-            int choice = sc.nextInt();
-            if(choice >= 0 && choice <= items.size()) {
-                return choice;
-            } else {
-                System.out.println("1 ~ "+items.size()+" 선택번호를 입력해주세요.\n");
-                return -3;
+        if(carts.size() > 0) {
+            for (int num = 0; num < items.size(); num++) {
+                System.out.println(num + 1 + ". " + items.get(num).getCategory());
             }
-        }
-        catch (InputMismatchException e) {
-            System.out.println("1 ~ "+items.size()+" 선택번호를 입력해주세요.\n");
-            sc.nextLine();
-            return -3;
+            System.out.println("\n[ ORDER MENU ]\n");
+            System.out.println(items.size()+1 + ". ORDERS");
+            System.out.println(items.size()+2 + ". CANCEL");
+            System.out.println("0. 종료하기     | 종료");
+        } else {
+            for (int num = 0; num < items.size(); num++) {
+                System.out.println(num + 1 + ". " + items.get(num).getCategory());
+            }
+            System.out.println("0. 종료하기     | 종료");
         }
     }
-    public int choiceSubMenu(int choice) {
-        try {
+    public int choiceMenu() throws InputMismatchException {
+            int choice = sc.nextInt()-1;
+            if((choice >= -1 && choice < items.size()) || (choice >= -1 && choice < items.size()+2 && carts.size() > 0)) return choice;
+            else throw new InputMismatchException();
+    }
+    public int choiceSubMenu(int choice) throws InputMismatchException {
             int choice2 = sc.nextInt()-1;
-            System.out.println(items.get(choice).getItems().size());
-            if (choice2 >= -1 && choice2 < items.get(choice).getItems().size()) {
-                return choice2;
-            } else {
-                System.out.println("1 ~ "+items.get(choice).getItems().size()+" 선택번호를 입력해주세요.\n");
-                return -3;
-            }
+            if (choice2 >= -1 && choice2 < items.get(choice).getItems().size()) return choice2;
+            else throw new InputMismatchException();
+    }
+    public void shoppingCart() throws InputMismatchException {
+        System.out.println("아래와 같이 주문 하시겠습니까?\n");
+        carts.forEach((key, value) -> System.out.println(key.getName() + "    " + "| W "
+                + key.getPrice() + " | " + key.getDescription() + " " + value + "개"));
+        AtomicInteger sum = new AtomicInteger(0);
+        carts.forEach((key, value) -> sum.addAndGet((int) (value * key.getPrice())));
+        System.out.println("\n[ Total ]\n" + "| W " + sum.get() + " | \n");
+        System.out.println("1. 주문      2. 메뉴판");
+        int choice = sc.nextInt();
+        if (choice == 1) {
+            System.out.println("할인 정보를 입력해주세요.\n" +
+                    "1. 국가유공자 : 10% \n" +
+                    "2. 군인     :  5%\n" +
+                    "3. 학생     :  3%\n" +
+                    "4. 일반     :  0%");
+            choice = sc.nextInt();
+            if (choice == 1) System.out.println("주문이 완료되었습니다. 금액은 W " + ((double) sum.get() - (double) sum.get() / 10) + " 입니다.");
+            else if (choice == 2) System.out.println("주문이 완료되었습니다. 금액은 W " + ((double) sum.get() - (double) sum.get() / 20) + " 입니다.");
+            else if (choice == 3) System.out.println("주문이 완료되었습니다. 금액은 W " + ((double) sum.get() - (double) sum.get() / 100 * 3) + " 입니다.");
+            else if (choice == 4) System.out.println("주문이 완료되었습니다. 금액은 W " + (double) sum.get() + " 입니다.");
+            else throw new InputMismatchException();
+            carts.clear();
         }
-        catch (InputMismatchException e) {
-            System.out.println("1 ~ "+items.get(choice).getItems().size()+" 선택번호를 입력해주세요.\n");
-            sc.nextLine();
-            return -3;
-        }
+        else throw new InputMismatchException();
     }
     public void start() {
         while (true) {
-            printMainMenu();
-            int choice = choiceMenu() - 1;
-            if (choice == -1) break;
-            else if (choice == -4) continue;
+            int choice = 0;
+            try {
+                printMainMenu();
+                choice = choiceMenu();
+                if (choice == -1) break;
+                else if (choice == 2) {
+                    shoppingCart();
+                    continue;
+                }
+                else if (choice == 3) {
+                    carts.clear();
+                    System.out.println("장바구니를 비웁니다.\n");
+                    continue;
+                }
+            }
+            catch (InputMismatchException e) {
+                System.out.println("제대로 된 선택번호를 입력해주세요.\n");
+                sc.nextLine();
+                continue;
+            }
             while(true) {
-                items.get(choice).printMenu();
-                int choice2 = choiceSubMenu(choice);
-                if (choice2 == -1) break;
-                else if (choice2 == -3) continue;
-                List<MenuItem> temp = items.get(choice).getItems();
-                System.out.println("선택한 메뉴 : "+temp.get(choice2).getName()+" | W "+temp.get(choice2).getPrice()+
-                                   " | "+temp.get(choice2).getDescription());
+                try {
+                    items.get(choice).printMenu();
+                    int choice2 = choiceSubMenu(choice);
+                    if (choice2 == -1) break;
+                    List<MenuItem> temp = items.get(choice).getItems();
+                    System.out.println("선택한 메뉴 : "+temp.get(choice2).getName()+
+                                       " | W "+temp.get(choice2).getPrice()+
+                                       " | "+temp.get(choice2).getDescription());
+                    System.out.println("위 메뉴를 장바구니에 추가하시겠습니까?\n" +
+                                       "1. 확인        2. 취소");
+                    int choice3 = sc.nextInt();
+                    if(choice3 == 1) {
+                        carts.put(temp.get(choice2), carts.getOrDefault(temp.get(choice2), 0) + 1);
+                        System.out.println(temp.get(choice2).getName()+" 이 장바구니에 추가되었습니다.");
+                    }
+                    else if(choice3 == 2) System.out.println("취소합니다.\n");
+                    else throw new InputMismatchException();
+                }
+                catch (InputMismatchException e) {
+                    System.out.println("제대로 된 선택번호를 입력해주세요.\n");
+                    sc.nextLine();
+                }
             }
         }
     }

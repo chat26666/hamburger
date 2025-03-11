@@ -13,7 +13,5 @@ public class Main {
         Menu[] menu = new Menu[]{new Menu("BURGER", name, price, description),new Menu("DRINKS", name1, price1, description1)};
         Kiosk kiosk = new Kiosk(menu);
         kiosk.start();
-
-
     }
 }
